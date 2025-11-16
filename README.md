@@ -1,97 +1,136 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 막차 타임 - 인하대생 안전 귀가 서비스
 
-# Getting Started
+인하대학교 통학생을 위한 늦은 밤 막차 정보 및 도보 구간 안전도 통합 안내 서비스입니다.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 주요 기능
 
-## Step 1: Start Metro
+### P0 (필수 기능)
+- **막차 기반 최소 출발 시각 계산**: 막차를 놓치지 않도록 가장 늦은 출발 시각 제공
+- **도보 구간 안전도 평가**: 범죄 통계 기반 안전도 점수 계산 및 경고 표시
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### P1 (확장 기능)
+- 최적 동선 비교 추천 (향후 구현 예정)
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 기술 스택
 
-```sh
-# Using npm
-npm start
+- **Frontend**: React Native
+- **Navigation**: React Navigation (Stack Navigator)
+- **HTTP Client**: Axios
+- **Backend**: Spring Boot (REST API)
+- **Database**: PostgreSQL
 
-# OR using Yarn
-yarn start
+## 프로젝트 구조
+
+```
+frontend/
+├── App.js              # 네비게이션 설정 및 앱 진입점
+├── HomeScreen.js       # 홈 화면 (경로 입력)
+├── ResultScreen.js     # 결과 화면 (막차 시각, 안전도 표시)
+├── index.js            # React Native 앱 등록
+├── package.json        # 의존성 관리
+└── app.json            # 앱 설정
 ```
 
-## Step 2: Build and run your app
+## 설치 및 실행
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### 1. 의존성 설치
 
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```bash
+npm install
 ```
 
-### iOS
+또는
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```bash
+yarn install
 ```
 
-Then, and every time you update your native dependencies, run:
+### 2. iOS 실행
 
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+```bash
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### 3. Android 실행
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+npm run android
+```
 
-## Step 3: Modify your app
+## API 연동
 
-Now that you have successfully run the app, let's make changes!
+### 백엔드 API 엔드포인트 설정
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+`HomeScreen.js` 파일에서 API URL을 수정하세요:
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+```javascript
+const API_URL = 'http://[YOUR_SPRING_BOOT_API_URL]/api/search';
+```
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+### API 요청 형식
 
-## Congratulations! :tada:
+```javascript
+GET /api/search?start=인하대학교&end=강남역
+```
 
-You've successfully run and modified your React Native App. :partying_face:
+### API 응답 형식 (예상)
 
-### Now what?
+```json
+{
+  "destination": "강남역",
+  "lastTrainTime": "2024-01-15T22:40:00",
+  "recommendedDepartureTime": "2024-01-15T21:25:00",
+  "latestDepartureTime": "2024-01-15T22:40:00",
+  "totalDuration": "1시간 15분",
+  "transferInfo": "9-1, 1호선",
+  "walkingDistance": "580m",
+  "safetyScore": 72
+}
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## 화면 구성
 
-# Troubleshooting
+### HomeScreen (홈 화면)
+- 출발지: 인하대학교 (고정)
+- 도착지: 사용자 입력 (자동완성 지원 예정)
+- 자주 가는 목적지: 빠른 선택을 위한 카드
+- 경로 검색 버튼
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+### ResultScreen (결과 화면)
+- 현재 시각 (실시간 업데이트)
+- 목적지 정보
+- 막차 시각
+- 권장 출발 시각
+- 최대 출발 시각
+- 경로 상세 정보 (소요 시간, 환승 정보, 도보 거리)
+- 안전도 점수 및 배지
+- 안전 위험 경고 (안전도 70점 미만 시)
 
-# Learn More
+## 개발 참고사항
 
-To learn more about React Native, take a look at the following resources:
+### 스타일링
+- 모든 스타일은 `StyleSheet.create`를 사용하여 정의
+- Figma 디자인 기반으로 UI 구성
+- 색상 팔레트:
+  - Primary: `#007AFF`
+  - Background: `#F4F7FF`
+  - Danger: `#F44336`
+  - Safe: `#4CAF50`
+  - Warning: `#FF9800`
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+### 아이콘
+현재는 이모지로 아이콘을 대체하고 있습니다. 프로덕션에서는 `react-native-vector-icons` 같은 라이브러리 사용을 권장합니다.
+
+## 향후 개선 사항
+
+- [ ] 도착지 자동완성 기능 구현
+- [ ] 지도 연동 (P1)
+- [ ] 다중 경로 비교 기능 (P1)
+- [ ] 사용자 위치 기반 출발지 자동 설정
+- [ ] 최근 검색 기록 저장
+- [ ] 푸시 알림 (막차 시간 알림)
+
+## 라이선스
+
+이 프로젝트는 Dataup Contest 4조의 프로젝트입니다.
+
