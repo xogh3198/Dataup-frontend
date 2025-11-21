@@ -1,4 +1,4 @@
-package com.safetyreturnservice
+package com.tempproject
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
